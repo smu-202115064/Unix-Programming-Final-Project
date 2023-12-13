@@ -3,10 +3,10 @@
 #include <unistd.h>
 
 #include "client.c"
-#include "node/master.c"
+#include "master.c"
 
 
-int main() {
+int aaa() {
     pid_t pid;
     int fd[2];
     FILE *fp;
