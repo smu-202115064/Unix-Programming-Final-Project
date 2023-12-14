@@ -3,18 +3,19 @@
 #include <stdbool.h>
 #include <string.h>
 #include <errno.h>
+#include <arpa/inet.h>
 #include "socket.h"
 #include "worker.h"
 
 
 void run_worker(const int worker_id) {
     int sock_fd;
-    struct sockaddr_un *sock_addr;
+    t_sock_addr *sock_addr;
     char *buf;
     size_t bufsize;
 
     printf("[worker#%d] allocating memory...\n", worker_id);
-    sock_addr = (struct sockaddr_un *) malloc(sizeof(struct sockaddr_un));
+    sock_addr = (t_sock_addr *) malloc(sizeof(t_sock_addr));
 
     bufsize = BUFSIZ;
     buf = (char *) malloc(bufsize);
@@ -22,6 +23,13 @@ void run_worker(const int worker_id) {
     printf("[worker#%d] initializing...\n", worker_id);
     socket_init_fd(&sock_fd);
     socket_init_addr(sock_addr);
+
+    sock_addr->sin_port = htons( SOCKET_PORT );
+    if (inet_pton(AF_INET, "127.0.0.1", &sock_addr->sin_addr) <= 0) {
+        printf("\nInvalid address/ Address not supported \n");
+        exit(EXIT_FAILURE);
+    }
+
     socket_connect(sock_fd, sock_addr);
 
     while (true) {

@@ -17,22 +17,27 @@ int get_max_fd(t_queue *queue, int default_fd) {
 void socket_host(t_sock_on_init on_init, t_sock_on_join on_join, t_sock_on_join on_leave, t_sock_on_receive on_receive, const size_t n_connections) {
     int server_fd;
     int client_fd;
+    int opt = true;
     char *buf;
     size_t bufsize;
-    struct sockaddr_un *server_addr;
+    t_sock_addr *server_addr;
     t_queue *client_queue;
     fd_set fdset;
 
     client_queue = queue_create();
-    server_addr = (struct sockaddr_un *) malloc(sizeof(struct sockaddr_un));
+    server_addr = (t_sock_addr *) malloc(sizeof(t_sock_addr));
 
     bufsize = 1024;
     buf = (char *) malloc(bufsize);
 
-    remove(SOCKET_NAME);
-
     socket_init_fd(&server_fd);
     socket_init_addr(server_addr);
+
+    // set master socket to allow multiple connections
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, (char *)&opt, sizeof(opt)) < 0) {
+        perror("setsockopt");
+        exit(EXIT_FAILURE);
+    }
 
     socket_bind(server_fd, server_addr);
     socket_listen(server_fd, n_connections);
