@@ -45,18 +45,25 @@ void run_master(FILE *rfp) {
 
 
 void on_init(const int sock_fd) {
-    printf("[master] spawning %d worker(s)...\n", NUMBER_OF_WORKERS);
-    for (int i = 0; i < NUMBER_OF_WORKERS; i++) {
-        spawn_worker(i);
-    }
+    // printf("[master] spawning %d worker(s)...\n", NUMBER_OF_WORKERS);
+    // for (int i = 0; i < NUMBER_OF_WORKERS; i++) {
+    //     spawn_worker(i);
+    // }
     printf("[master] total %d nodes are connected.\n", (int) worker_queue->size);
+}
+
+
+void on_hook() {
+    printf("[master] hook called!\n");
+    queue_print(worker_queue);
+    print_status();
+    schedule_job();
 }
 
 
 void on_join(const int sock_fd) {
     printf("[master] worker %d joined.\n", sock_fd);
     queue_push(worker_queue, sock_fd);
-    queue_print(worker_queue);
     printf("[master] total %d nodes are connected.\n", (int) worker_queue->size);
     schedule_job();
 }
@@ -74,17 +81,13 @@ void on_leave(const int sock_fd) {
 
 
 void on_receive(const int sock_fd, const void *buf, const size_t bufsize) {
-    printf("[master] recieved processed data from worker: \"%s\"\n", (char *) buf);
+    printf("[master] recieved processed data from worker (%d): \"%s\"\n", sock_fd, (char *) buf);
     n_processed_data++;
 
     // mark as not busy
     queue_remove(worker_queue, -sock_fd);
     queue_push(worker_queue, sock_fd);
     queue_print(worker_queue);
-
-    print_status();
-
-    schedule_job();
 }
 
 
@@ -95,36 +98,45 @@ void schedule_job() {
 
     printf("[master] scheduling job...\n");
 
+    // Search for non-busy worker node
+    sock_fd = find_schedulable_worker();
+    if (sock_fd == 0) {
+        printf("[master] couldn't find schedulable worker\n");
+        return;
+    }
+    printf("[master] found schedulable worker with socket fd %d\n", sock_fd);
+
     printf("[master] waiting data from client...\n");
     do {
         pipe_readline(fp, buf, bufsize);
     } while (strlen(buf) == 0); // ignore empty line
-    printf("[master] received data from client: \"%s\"\n", buf);
-
-    sock_fd = find_schedulable_worker();
-    printf("[master] found schedulable worker with socket fd %d\n", sock_fd);
+    printf("[master] received data from client\n");
 
     if (send(sock_fd, buf, strlen(buf), 0) != strlen(buf) ) {
         perror("[master] socket send failed");
         return;
     }
 
+    printf("[master] scheduling worker (%d) with data \"%s\"\n", sock_fd, buf);
+
     // mark as busy
     queue_remove(worker_queue, sock_fd);
     queue_push(worker_queue, -sock_fd);
     queue_print(worker_queue);
 
-    printf("[master] scheduled worker %d with data %s\n", sock_fd, buf);
 }
 
 
 int find_schedulable_worker() {
     // 지금 바쁘지 않은 워커 노드를 찾는다.
     // socket fd가 음수이면 바쁜 것이다.
-    while (queue_front(worker_queue) < 0) {
+    for (int i = 0; i < worker_queue->size; i++) {
+        if (queue_front(worker_queue) > 0) {
+            return queue_front(worker_queue);
+        }
         queue_push(worker_queue, queue_pop(worker_queue));
     }
-    return queue_front(worker_queue);
+    return 0;
 }
 
 

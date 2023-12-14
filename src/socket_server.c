@@ -46,7 +46,6 @@ void socket_host(t_sock_on_init on_init, t_sock_on_join on_join, t_sock_on_join 
     FD_SET(server_fd, &fdset);
 
     on_init(server_fd);
-
     while (true) {
         int activity = select(get_max_fd(client_queue, server_fd)+1, &fdset, NULL, NULL, NULL);
         if (activity < 0 && (errno != EINTR)) {
@@ -80,6 +79,8 @@ void socket_host(t_sock_on_init on_init, t_sock_on_join on_join, t_sock_on_join 
             queue_push(client_queue, client_fd);
             on_receive(client_fd, buf, n);
         }
+
+        // on_hook();
     }
     close(server_fd);
     free(client_queue);

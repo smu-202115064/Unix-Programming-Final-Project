@@ -110,7 +110,7 @@ bool queue_contains(const t_queue *queue, const int data) {
 
 
 void queue_print(const t_queue *queue) {
-    printf("[queue] %d items : ", queue->size);
+    printf("[queue] %d items : ", (int) queue->size);
     t_queue_node *node = queue->front;
     while (node != NULL) {
         printf("(%d) -> ", node->data);

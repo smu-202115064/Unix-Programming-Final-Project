@@ -1,13 +1,16 @@
-all: pipe queue socket socket_server
+all: client server
 
-client: src/client.c pipe
-	gcc -c src/client.c -o bin/client src/pipe.o
+client: src/client.c master worker pipe queue socket socket_server
+	gcc src/client.c -o bin/client bin/queue.o bin/pipe.o bin/socket.o bin/socket_server.o bin/worker.o
 
-master: src/client.c
-	gcc -c src/master.c
+server: src/server.c worker socket
+	gcc src/server.c -o bin/server bin/socket.o bin/worker.o
 
-worker: src/client.c
-	gcc -c src/worker.c
+master: src/master.c
+	gcc -c src/master.c -o bin/master.o
+
+worker: src/worker.c
+	gcc -c src/worker.c -o bin/worker.o
 
 pipe: src/pipe.c
 	gcc -c src/pipe.c -o bin/pipe.o

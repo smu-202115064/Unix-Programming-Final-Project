@@ -31,6 +31,7 @@ extern void socket_init_fd(int *sock_fd);
  *
 */
 extern void socket_init_addr(t_sock_addr *sock_addr);
+extern void socket_init_addr_ipv4(t_sock_addr *sock_addr, const char *ipv4);
 extern void socket_connect(const int sock_fd, const t_sock_addr *sock_addr);
 extern void socket_bind(const int sock_fd, const t_sock_addr *sock_addr);
 extern void socket_listen(const int sock_fd, const int n_connections);

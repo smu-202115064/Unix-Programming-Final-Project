@@ -42,10 +42,11 @@ void run_worker(const int worker_id) {
         }
 
         process_data(buf);
-        printf("[worker#%d] processed data %s\n", worker_id, buf);
+        printf("[worker#%d] processed data \"%s\"\n", worker_id, buf);
 
         if(send(sock_fd, buf, strlen(buf), 0) != strlen(buf) ) {
             perror("[worker] socket send failed");
+            printf("[worker#%d] disconnected from server\n", worker_id);
             exit(EXIT_FAILURE);
             return;
         }
