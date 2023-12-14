@@ -8,7 +8,6 @@
 
 void redirect_stdin(FILE *wfp) {
     char c;
-    printf("[client] start process with pid %d...\n", getpid());
     while (!feof(stdin)) {
         if (fread(&c, sizeof(char), 1, stdin) == 0) {
             perror("[client] reading from stdin");
@@ -39,7 +38,9 @@ void run_client() {
             break;
         default: /* client */
             fclose(fps[0]);
-            redirect_stdin(fps[1]);
+            while (true) {
+                redirect_stdin(fps[1]);
+            }
             fclose(fps[1]);
             exit(EXIT_SUCCESS);
             break;

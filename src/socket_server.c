@@ -14,7 +14,7 @@ int get_max_fd(t_queue *queue, int default_fd) {
 }
 
 
-void socket_host(t_sock_on_join on_join, t_sock_on_join on_leave, t_sock_on_receive on_receive, const size_t n_connections) {
+void socket_host(t_sock_on_init on_init, t_sock_on_join on_join, t_sock_on_join on_leave, t_sock_on_receive on_receive, const size_t n_connections) {
     int server_fd;
     int client_fd;
     char *buf;
@@ -29,16 +29,20 @@ void socket_host(t_sock_on_join on_join, t_sock_on_join on_leave, t_sock_on_rece
     bufsize = 1024;
     buf = (char *) malloc(bufsize);
 
+    remove(SOCKET_NAME);
+
     socket_init_fd(&server_fd);
     socket_init_addr(server_addr);
 
     socket_bind(server_fd, server_addr);
     socket_listen(server_fd, n_connections);
 
-    while (true) {
-        FD_ZERO(&fdset);
-		FD_SET(server_fd, &fdset);
+    FD_ZERO(&fdset);
+    FD_SET(server_fd, &fdset);
 
+    on_init(server_fd);
+
+    while (true) {
         int activity = select(get_max_fd(client_queue, server_fd)+1, &fdset, NULL, NULL, NULL);
         if (activity < 0 && (errno != EINTR)) {
             perror("[server] select error");
@@ -49,6 +53,7 @@ void socket_host(t_sock_on_join on_join, t_sock_on_join on_leave, t_sock_on_rece
         if (FD_ISSET(server_fd, &fdset)) {
             client_fd = socket_accept(server_fd, server_addr);
             queue_push(client_queue, client_fd);
+            FD_SET(client_fd, &fdset);
             on_join(client_fd);
         }
 
@@ -63,6 +68,7 @@ void socket_host(t_sock_on_join on_join, t_sock_on_join on_leave, t_sock_on_rece
             if (n == 0) {
                 FD_CLR(client_fd, &fdset);
                 close(client_fd);
+                // 워커 노드의 연결이 해제됨.
                 on_leave(client_fd);
                 continue;
             }

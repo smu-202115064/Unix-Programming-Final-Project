@@ -12,6 +12,9 @@ void queue_push_node(t_queue *queue, t_queue_node *node) {
     if (queue->size > 0) {
         queue->rear->next = node;
     }
+    if (queue->size == 0) {
+        queue->front = node;
+    }
     queue->rear = node;
     queue->size++;
 }
@@ -21,6 +24,10 @@ t_queue_node *queue_pop_node(t_queue *queue) {
     t_queue_node *node = queue->front;
     queue->front = node->next;
     queue->size--;
+    if (queue->size == 0) {
+        queue->front = NULL;
+        queue->rear = NULL;
+    }
     return node;
 }
 
@@ -32,6 +39,7 @@ t_queue_node *queue_create_node(int data) {
         node = queue_pop_node(disposed_node);
     } else {
         // 새로운 공간을 할당하여 생성.
+        printf("[queue] allocate new node.\n");
         node = malloc(sizeof(t_queue_node));
     }
     node->data = data;
@@ -57,7 +65,7 @@ void queue_push(t_queue *queue, const int data) {
 
 int queue_pop(t_queue *queue) {
     if (queue->size == 0) {
-        printf("empty queue\n");
+        printf("[queue] empty queue\n");
         exit(EXIT_FAILURE);
     }
     t_queue_node *node = queue_pop_node(queue);
@@ -82,7 +90,7 @@ void queue_remove(t_queue *queue, const int data) {
 
 int queue_front(const t_queue *queue) {
     if (queue->size == 0) {
-        printf("empty queue\n");
+        printf("[queue] empty queue\n");
         exit(EXIT_FAILURE);
     }
     return queue->front->data;
@@ -98,4 +106,15 @@ bool queue_contains(const t_queue *queue, const int data) {
         node = node->next;
     }
     return false;
+}
+
+
+void queue_print(const t_queue *queue) {
+    printf("[queue] %d items : ", queue->size);
+    t_queue_node *node = queue->front;
+    while (node != NULL) {
+        printf("(%d) -> ", node->data);
+        node = node->next;
+    }
+    printf("\n");
 }

@@ -54,4 +54,8 @@ int queue_front(const t_queue *queue);
 
 bool queue_contains(const t_queue *queue, const int data);
 
+
+void queue_print(const t_queue *queue);
+
+
 #endif

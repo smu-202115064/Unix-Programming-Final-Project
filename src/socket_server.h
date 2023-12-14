@@ -9,12 +9,13 @@
 #include "queue.h"
 
 
+typedef void (*t_sock_on_init)(const int sock_fd);
 typedef void (*t_sock_on_join)(const int sock_fd);
 typedef void (*t_sock_on_leave)(const int sock_fd);
 typedef void (*t_sock_on_receive)(const int sock_fd, const void *buf, const size_t bufsize);
 
 
-void socket_host(t_sock_on_join, t_sock_on_leave, t_sock_on_receive, const size_t);
+void socket_host(t_sock_on_init, t_sock_on_join, t_sock_on_leave, t_sock_on_receive, const size_t);
 
 
 #endif
