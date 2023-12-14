@@ -1,23 +1,25 @@
-all: main
-	bin/main
+all: pipe queue socket socket_server
 
-main: bin/queue.o bin/worker.o bin/master.o bin/client.o bin/main.o
-	gcc -o bin/main bin/main.o
+client: src/client.c pipe
+	gcc -c src/client.c -o bin/client src/pipe.o
 
-bin/main.o: src/main.c
-	gcc -c src/main.c -o bin/main.o
+master: src/client.c
+	gcc -c src/master.c
 
-bin/client.o: src/client.c
-	gcc -c src/client.c -o bin/client.o
+worker: src/client.c
+	gcc -c src/worker.c
 
-bin/master.o: src/node/master.c
-	gcc -c src/node/master.c -o bin/master.o
+pipe: src/pipe.c
+	gcc -c src/pipe.c -o bin/pipe.o
 
-bin/worker.o: src/node/worker.c
-	gcc -c src/node/worker.c -o bin/worker.o
+queue: src/queue.c
+	gcc -c src/queue.c -o bin/queue.o
 
-bin/queue.o: src/util/queue.c
-	gcc -c src/util/queue.c -o bin/queue.o
+socket: src/socket.c
+	gcc -c src/socket.c -o bin/socket.o
+
+socket_server: src/socket_server.c
+	gcc -c src/socket_server.c -o bin/socket_server.o
 
 clean:
 	rm -f bin/*

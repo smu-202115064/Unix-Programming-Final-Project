@@ -1,57 +1,57 @@
-#include <sys/socket.h>
-#include <sys/un.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include "socket.h"
 
 
-int socket_create_server(int number_of_clients) {
-    int sd, len;
-    struct sockaddr_un ser, cli;
-
-    if ((sd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
-        perror("[socket ser] socket");
-        exit(1);
-    }
-
-    memset((char *)&ser, 0, sizeof(ser));
-    ser.sun_family = AF_UNIX;
-    strcpy(ser.sun_path, SOCKET_NAME);
-    len = sizeof(ser.sun_family)+strlen(ser.sun_path);
-
-    if (bind(sd, (struct sockaddr *)&ser, len) < 0) {
-        perror("[socket ser] bind");
-        exit(1);
-    }
-
-    if (listen(sd, number_of_clients) == -1) {
-        perror("[socket ser] listen");
-        exit(1);
-    }
-
-    return sd;
+size_t socket_calc_len(const struct sockaddr_un *sock_addr) {
+    return sizeof(sock_addr->sun_family) + strlen(sock_addr->sun_path);
 }
 
 
-int socket_create_client() {
-    int sd, len;
-    struct sockaddr_un ser;
-
-    if ((sd = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
-        perror("[socket cli] socket");
-        exit(1);
+void socket_init_fd(int *sock_fd) {
+    *sock_fd = socket(AF_UNIX, SOCK_STREAM, 0);
+    if (*sock_fd == -1) {
+        perror("[socket] init failed");
+        exit(EXIT_FAILURE);
     }
+}
 
-    memset((char *)&ser, 0, sizeof(ser));
-    ser.sun_family = AF_UNIX;
-    strcpy(ser.sun_path, SOCKET_NAME);
 
-    len = sizeof(ser.sun_family)+strlen(ser.sun_path);
-    if (connect(sd, (struct sockaddr *)&ser, len) < 0) {
-        perror("[socket cli] bind");
-        exit(1);
+void socket_init_addr(struct sockaddr_un *sock_addr) {
+    memset((char *)&sock_addr, 0, sizeof(struct sockaddr_un));
+    strcpy(sock_addr->sun_path, SOCKET_NAME);
+    sock_addr->sun_family = AF_UNIX;
+}
+
+
+void socket_connect(const int sock_fd, const struct sockaddr_un *sock_addr) {
+    if (connect(sock_fd, (struct sockaddr *)&sock_addr, socket_calc_len(sock_addr)) < 0) {
+        perror("[socket] connect failed");
+        exit(EXIT_FAILURE);
     }
+}
 
-    return sd;
+
+void socket_bind(const int sock_fd, const struct sockaddr_un *sock_addr) {
+    if (bind(sock_fd, (struct sockaddr *)&sock_addr, socket_calc_len(sock_addr)) < 0) {
+        perror("[socket] bind failed");
+        exit(EXIT_FAILURE);
+    }
+}
+
+
+void socket_listen(const int sock_fd, const int n_connections) {
+    if (listen(sock_fd, n_connections) == -1) {
+        perror("[socket] listen failed");
+        exit(EXIT_FAILURE);
+    }
+}
+
+
+int socket_accept(const int sock_fd, const struct sockaddr_un *sock_addr) {
+    socklen_t sock_len = socket_calc_len(sock_addr);
+    int new_sock_fd = accept(sock_fd, (struct sockaddr *)&sock_addr, &sock_len);
+    if (new_sock_fd < 0) {
+        perror("[socket] accept failed");
+        exit(EXIT_FAILURE);
+    }
+    return new_sock_fd;
 }
