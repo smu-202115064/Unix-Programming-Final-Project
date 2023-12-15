@@ -12,9 +12,6 @@ master: src/master.c
 worker: src/worker.c
 	gcc -c src/worker.c -o bin/worker.o
 
-buffer: src/buffer.c
-	gcc -c src/buffer.c -o bin/buffer.o
-
 pipe: src/pipe.c
 	gcc -c src/pipe.c -o bin/pipe.o
 

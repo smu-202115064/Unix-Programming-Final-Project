@@ -18,14 +18,7 @@ typedef struct queue {
 } t_queue;
 
 
-/**
- * @brief 새로운 큐를 만드는 함수.
- *
- * 내부적으로 `malloc()`을 호출하여 생성한다.
- *
- * @return t_queue* 새로 생성된 큐의 포인터를 반환한다.
- */
-t_queue *queue_create();
+void queue_init(t_queue *queue);
 
 
 /**

@@ -24,15 +24,6 @@ void socket_init_addr(t_sock_addr *sock_addr) {
 }
 
 
-void socket_init_addr_ipv4(t_sock_addr *sock_addr, const char *ipv4) {
-    socket_init_addr(sock_addr);
-    if (inet_pton(AF_INET, ipv4, sock_addr->sin_addr) <= 0) {
-        printf("\nInvalid address/ Address not supported \n");
-        exit(EXIT_FAILURE);
-    }
-}
-
-
 void socket_connect(const int sock_fd, const t_sock_addr *sock_addr) {
     printf("[socket] connecting...\n");
     if (connect(sock_fd, (struct sockaddr *)sock_addr, socket_calc_len(sock_addr)) < 0) {
