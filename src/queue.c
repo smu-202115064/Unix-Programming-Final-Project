@@ -48,7 +48,7 @@ t_queue_node *queue_create_node(int data) {
 }
 
 
-t_queue *queue_create() {
+void queue_init(t_queue *queue) {
     t_queue *q = malloc(sizeof(t_queue));
     q->front = NULL;
     q->rear = NULL;

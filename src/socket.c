@@ -63,3 +63,23 @@ int socket_accept(const int sock_fd, const t_sock_addr *sock_addr) {
     }
     return new_sock_fd;
 }
+
+
+void socket_send(const int sock_fd, const char *buf) {
+    int n;
+    n = strlen(buf);
+    if(send(sock_fd, buf, n, 0) != n) {
+        perror("socket_send");
+        exit(EXIT_FAILURE);
+    }
+}
+
+
+void socket_recv(const int sock_fd, char *buf, const size_t bufsize) {
+    int n;
+    if ((n = read(sock_fd, buf, bufsize-1)) == -1) {
+        perror("socket_recv");
+        exit(EXIT_FAILURE);
+    }
+    buf[n] = '\0';
+}

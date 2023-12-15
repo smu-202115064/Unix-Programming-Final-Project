@@ -1,4 +1,6 @@
+#include "socket.h"
 #include "socket_server.h"
+#include "socket_event.h"
 
 
 int get_max_fd(t_queue *queue, int default_fd) {
@@ -16,15 +18,12 @@ int get_max_fd(t_queue *queue, int default_fd) {
 
 void socket_host(t_sock_on_init on_init, t_sock_on_join on_join, t_sock_on_join on_leave, t_sock_on_receive on_receive, const size_t n_connections) {
     int server_fd;
-    int client_fd;
-    int opt = true;
-    char *buf;
-    size_t bufsize;
     t_sock_addr *server_addr;
-    t_queue *client_queue;
+    char buf[BUFSIZ];
+    int client_fd;
+    t_queue *client_fd_queue = queue_create();
     fd_set fdset;
 
-    client_queue = queue_create();
     server_addr = (t_sock_addr *) malloc(sizeof(t_sock_addr));
 
     bufsize = 1024;
@@ -56,8 +55,9 @@ void socket_host(t_sock_on_init on_init, t_sock_on_join on_join, t_sock_on_join 
         // 새로운 클라이언트가 접속했는지 확인.
         if (FD_ISSET(server_fd, &fdset)) {
             client_fd = socket_accept(server_fd, server_addr);
-            queue_push(client_queue, client_fd);
+            FD_CLR(server_fd, &fdset);
             FD_SET(client_fd, &fdset);
+            queue_push(client_queue, client_fd);
             on_join(client_fd);
         }
 
