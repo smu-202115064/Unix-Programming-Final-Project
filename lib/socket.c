@@ -21,7 +21,7 @@ void socket_init(socknode_t *socknode) {
     socknode->addr.sin_port = htons( SOCKET_PORT );
     socknode->addrlen = sizeof(socknode->addr);
     socknode->buf = (char *) calloc(BUFSIZ, sizeof(char));
-    socknode->buf = BUFSIZ;
+    socknode->bufsize = BUFSIZ;
 }
 
 
