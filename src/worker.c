@@ -10,12 +10,12 @@
 
 void run_worker(const int worker_id) {
     int sock_fd;
-    t_sock_addr *sock_addr;
+    sockaddr_t *sock_addr;
     char *buf;
     size_t bufsize;
 
     printf("[worker#%d] allocating memory...\n", worker_id);
-    sock_addr = (t_sock_addr *) malloc(sizeof(t_sock_addr));
+    sock_addr = (sockaddr_t *) malloc(sizeof(sockaddr_t));
 
     bufsize = BUFSIZ;
     buf = (char *) malloc(bufsize);
