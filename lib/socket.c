@@ -37,7 +37,7 @@ void socket_connect(const socknode_t *socknode) {
 }
 
 
-void socket_listen(const size_t n_conn, const socknode_t *socknode) {
+void socket_listen(const socknode_t *socknode, const size_t n_conn) {
     printf("[socket] bind & listening...\n");
     if (bind(socknode->fd, (struct sockaddr *)&socknode->addr, socknode->addrlen) < 0) {
         perror("socket_listen bind");
@@ -50,7 +50,7 @@ void socket_listen(const size_t n_conn, const socknode_t *socknode) {
 }
 
 
-void socket_accept(socknode_t *new_socknode, const socknode_t *socknode) {
+void socket_accept(const socknode_t *socknode, socknode_t *new_socknode) {
     if ((new_socknode->fd = accept(socknode->fd, (struct sockaddr *)&new_socknode->addr, &new_socknode->addrlen)) < 0) {
         perror("socket_accept");
         exit(EXIT_FAILURE);
