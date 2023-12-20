@@ -7,7 +7,7 @@
 
 
 int main() {
-    socknode_t sock;
+    socket_node_t sock;
 
     socket_init(&sock);
     socket_connect(&sock);
