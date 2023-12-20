@@ -8,6 +8,9 @@
 #include <netinet/in.h>
 #include "socket.h"
 
+#define SOCKET_NAME "smu.socket"
+#define SOCKET_PORT 8080
+
 
 void socket_init(socknode_t *socknode) {
     printf("[socket] initializing...\n");
