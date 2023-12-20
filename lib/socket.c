@@ -12,7 +12,7 @@
 #define SOCKET_PORT 8080
 
 
-void socket_init(socknode_t *socknode) {
+void socket_init(socket_node_t *socknode) {
     printf("[socket] initializing...\n");
     socknode->fd = socket(AF_INET, SOCK_STREAM, 0);
     if (socknode->fd == -1) {
@@ -28,7 +28,7 @@ void socket_init(socknode_t *socknode) {
 }
 
 
-void socket_connect(const socknode_t *socknode) {
+void socket_connect(const socket_node_t *socknode) {
     printf("[socket] connecting...\n");
     if (connect(socknode->fd, (struct sockaddr *)&socknode->addr, socknode->addrlen) < 0) {
         perror("socket_connect");
@@ -37,7 +37,7 @@ void socket_connect(const socknode_t *socknode) {
 }
 
 
-void socket_listen(const socknode_t *socknode, const size_t n_conn) {
+void socket_listen(const socket_node_t *socknode, const size_t n_conn) {
     printf("[socket] bind & listening...\n");
     if (bind(socknode->fd, (struct sockaddr *)&socknode->addr, socknode->addrlen) < 0) {
         perror("socket_listen bind");
@@ -50,7 +50,7 @@ void socket_listen(const socknode_t *socknode, const size_t n_conn) {
 }
 
 
-void socket_accept(const socknode_t *socknode, socknode_t *new_socknode) {
+void socket_accept(const socket_node_t *socknode, socket_node_t *new_socknode) {
     if ((new_socknode->fd = accept(socknode->fd, (struct sockaddr *)&new_socknode->addr, &new_socknode->addrlen)) < 0) {
         perror("socket_accept");
         exit(EXIT_FAILURE);
@@ -58,7 +58,7 @@ void socket_accept(const socknode_t *socknode, socknode_t *new_socknode) {
 }
 
 
-void socket_send(const socknode_t *socknode) {
+void socket_send(const socket_node_t *socknode) {
     if(send(socknode->fd, socknode->buf, strlen(socknode->buf), 0) != strlen(socknode->buf)) {
         perror("socket_send");
         exit(EXIT_FAILURE);
@@ -66,7 +66,7 @@ void socket_send(const socknode_t *socknode) {
 }
 
 
-void socket_recv(const socknode_t *socknode) {
+void socket_recv(const socket_node_t *socknode) {
     int n = read(socknode->fd, socknode->buf, socknode->bufsize-1);
     if (n == -1) {
         perror("socket_recv");

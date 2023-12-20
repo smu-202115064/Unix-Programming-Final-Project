@@ -15,13 +15,13 @@ struct _sock_node {
     char *buf;
     size_t bufsize;
 };
-typedef struct _sock_node socknode_t;
+typedef struct _sock_node socket_node_t;
 
-extern void socket_init(socknode_t *sock_node);
-extern void socket_connect(const socknode_t *sock_node);
-extern void socket_listen(const socknode_t *sock_node, const size_t n_conn);
-extern void socket_accept(const socknode_t *sock_node, socknode_t *new_sock_node);
-extern void socket_send(const socknode_t *sock_node);
-extern void socket_recv(const socknode_t *sock_node);
+extern void socket_init(socket_node_t *sock_node);
+extern void socket_connect(const socket_node_t *sock_node);
+extern void socket_listen(const socket_node_t *sock_node, const size_t n_conn);
+extern void socket_accept(const socket_node_t *sock_node, socket_node_t *new_sock_node);
+extern void socket_send(const socket_node_t *sock_node);
+extern void socket_recv(const socket_node_t *sock_node);
 
 #endif
