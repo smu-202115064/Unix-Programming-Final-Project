@@ -17,13 +17,11 @@ struct _sock_node {
 };
 typedef struct _sock_node socknode_t;
 
-typedef void (*sockcallback_t)(const socknode_t *);
-
 extern void socket_init(socknode_t *sock_node);
-extern void socket_connect(const socknode_t *sock_node, const sockcallback_t callback);
-extern void socket_listen(const size_t n_conn, const socknode_t *sock_node, const sockcallback_t callback);
-extern void socket_accept(socknode_t *new_sock_node, const socknode_t *sock_node, const sockcallback_t callback);
-extern void socket_send(const socknode_t *sock_node, const sockcallback_t callback);
-extern void socket_recv(const socknode_t *sock_node, const sockcallback_t callback);
+extern void socket_connect(const socknode_t *sock_node);
+extern void socket_listen(const size_t n_conn, const socknode_t *sock_node);
+extern void socket_accept(socknode_t *new_sock_node, const socknode_t *sock_node);
+extern void socket_send(const socknode_t *sock_node);
+extern void socket_recv(const socknode_t *sock_node);
 
 #endif
