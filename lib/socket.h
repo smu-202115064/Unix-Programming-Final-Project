@@ -12,8 +12,7 @@ struct _sock_node {
     sockfd_t fd;
     sockaddr_t addr;
     socklen_t addrlen;
-    char *buf;
-    size_t bufsize;
+    char buf[BUFSIZ];
 };
 typedef struct _sock_node socket_node_t;
 
@@ -22,6 +21,6 @@ extern void socket_connect(const socket_node_t *sock_node);
 extern void socket_listen(const socket_node_t *sock_node, const size_t n_conn);
 extern void socket_accept(const socket_node_t *sock_node, socket_node_t *new_sock_node);
 extern void socket_send(const socket_node_t *sock_node);
-extern void socket_recv(const socket_node_t *sock_node);
+extern void socket_recv(socket_node_t *sock_node);
 
 #endif
